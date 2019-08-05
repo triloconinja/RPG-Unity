@@ -2,29 +2,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-
-public class Mover : MonoBehaviour
+namespace RPG.Movement
 {
-    [SerializeField] Transform target;
 
-    void Update()
-    {
-       
-        UpdateAnimator();
-    }
 
-    public void MoveTo(Vector3 destination)
+    public class Mover : MonoBehaviour
     {
+        [SerializeField] Transform target;
+
+        void Update()
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); GetComponent<NavMeshAgent>().destination = destination;
+
+            UpdateAnimator();
         }
-    }
-    
-    private void UpdateAnimator()
-    {
-        Vector3 velocity = GetComponent<NavMeshAgent>().velocity;
-        Vector3 localVelocity = transform.InverseTransformDirection(velocity);
-        float speed = localVelocity.z;
-        GetComponent<Animator>().SetFloat("forwardSpeed", speed);
+
+        public void MoveTo(Vector3 destination)
+        {
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); GetComponent<NavMeshAgent>().destination = destination;
+            }
+        }
+
+        private void UpdateAnimator()
+        {
+            Vector3 velocity = GetComponent<NavMeshAgent>().velocity;
+            Vector3 localVelocity = transform.InverseTransformDirection(velocity);
+            float speed = localVelocity.z;
+            GetComponent<Animator>().SetFloat("forwardSpeed", speed);
+        }
     }
 }
