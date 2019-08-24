@@ -38,19 +38,29 @@ namespace RPG.Combat
             transform.LookAt(target.transform);
             // enemy rotates and face the user;
             target.transform.LookAt(transform);
-            if(timeSinceLastAttack > timeBetweenAttacks){
-
-                // This will trigger Hit() event
-                GetComponent<Animator>().SetTrigger("attack");
+            if(timeSinceLastAttack > timeBetweenAttacks)
+            {
+                TriggerAttack();
                 timeSinceLastAttack = 0;
-              
+
             }
-            
+
+        }
+
+        private void TriggerAttack()
+        {
+            // This will trigger Hit() event
+            GetComponent<Animator>().ResetTrigger("stopAttack");
+            GetComponent<Animator>().SetTrigger("attack");
         }
 
         //Animation event
         void Hit()
         {
+            if(target == null) 
+            {
+                return;
+            }
             target.TakeDamage(weaponDamage);
         }
 
@@ -59,18 +69,34 @@ namespace RPG.Combat
             return Vector3.Distance(transform.position, target.transform.position) < weaponRange;
         }
 
+        public bool CanAttack(CombatTarget combatTarget){
+
+            if(combatTarget == null) {
+                return false;
+            }
+            Health targetToTest = combatTarget.GetComponent<Health>();
+            return targetToTest != null && !targetToTest.IsDead();
+
+        }
+
+
         public void Attack(CombatTarget combatTarget)
         {
            GetComponent<ActionScheduler>().StartAction(this);
            target =  combatTarget.GetComponent<Health>();
         }
 
-        public void Cancel(){
-
-            GetComponent<Animator>().SetTrigger("stopAttack");
+        public void Cancel()
+        {
+            StopAttack();
             target = null;
         }
 
-        
+        private void StopAttack()
+        {
+            GetComponent<Animator>().ResetTrigger("attack");
+            GetComponent<Animator>().SetTrigger("stopAttack");
+        }
+
     }
 }

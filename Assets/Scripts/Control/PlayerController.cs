@@ -9,9 +9,40 @@ namespace RPG.Control
 
         private void Update()
         {
+            Terrain();
             if(InteractWithCombat()) return;
             if(InteractWithMovement()) return;
-            print("Nothing to do");
+          
+        }
+
+        private void Terrain(){
+            //ray starts at player position and points down
+            Ray ray = new Ray(transform.position, Vector3.down);
+
+            //will store info of successful ray cast
+            RaycastHit hitInfo;
+
+            //terrain should have mesh collider and be on custom terrain 
+            //layer so we don't hit other objects with our raycast
+            LayerMask layer = 1 << LayerMask.NameToLayer("Terrain");
+
+            //cast ray
+            if (Physics.Raycast(ray, out hitInfo, layer))
+            {
+                //get where on the z axis our raycast hit the ground
+                float z = hitInfo.point.z;
+
+                //copy current position into temporary container
+                Vector3 pos = transform.position;
+
+                //change z to where on the z axis our raycast hit the ground
+                pos.z = z;
+
+                //override our position with the new adjusted position.
+                transform.position = pos;
+                print(pos);
+            }
+            print("Terrain");
         }
 
         private bool InteractWithCombat()
@@ -19,7 +50,10 @@ namespace RPG.Control
             RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
             foreach(RaycastHit hit in hits){
                CombatTarget target =  hit.transform.GetComponent<CombatTarget>();
-               if(target == null) continue;
+               if(!GetComponent<Fighter>().CanAttack(target)){
+
+                   continue;
+               }
 
                 if(Input.GetMouseButton(0))
                 {
